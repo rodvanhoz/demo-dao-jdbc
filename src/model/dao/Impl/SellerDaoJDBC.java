@@ -16,11 +16,11 @@ import model.dao.SellerDao;
 import model.entities.Department;
 import model.entities.Seller;
 
-public class SellerDaoImplJDBC implements SellerDao {
+public class SellerDaoJDBC implements SellerDao {
 
 	private Connection conn;
 
-	public SellerDaoImplJDBC(Connection conn) {
+	public SellerDaoJDBC(Connection conn) {
 		this.conn = conn;
 	}
 
@@ -48,9 +48,21 @@ public class SellerDaoImplJDBC implements SellerDao {
 				}
 				DB.closeResultSet(rs);
 			} else {
+				try {
+					conn.rollback();
+				} catch (SQLException e1) {
+					throw new DbException("Erro inesperado ao fazer o rollback: " + e1.getMessage());
+				}
 				throw new DbException("Erro inexperado");
 			}
+			
+			conn.commit();
 		} catch (SQLException e) {
+			try {
+				conn.rollback();
+			} catch (SQLException e1) {
+				throw new DbException("Erro inesperado ao fazer o rollback: " + e1.getMessage());
+			}
 			throw new DbException(e.getMessage());
 		} finally {
 			DB.closeStatement(st);
@@ -73,7 +85,14 @@ public class SellerDaoImplJDBC implements SellerDao {
 			st.setInt(6, obj.getId());
 
 			st.executeUpdate();
+			
+			conn.commit();
 		} catch (SQLException e) {
+			try {
+				conn.rollback();
+			} catch (SQLException e1) {
+				throw new DbException("Erro inesperado ao fazer o rollback: " + e1.getMessage());
+			}
 			throw new DbException(e.getMessage());
 		} finally {
 			DB.closeStatement(st);
@@ -94,8 +113,15 @@ public class SellerDaoImplJDBC implements SellerDao {
 			if (rowsAffected == 0) {
 				throw new DbException("Id " + id + " nao foi encontrado na tabela Seller");
 			}
+			
+			conn.commit();
 		}
 		catch (SQLException e) {
+			try {
+				conn.rollback();
+			} catch (SQLException e1) {
+				throw new DbException("Erro inesperado ao fazer o rollback: " + e1.getMessage());
+			}
 			throw new DbException(e.getMessage());
 		} finally {
 			DB.closeStatement(st);
