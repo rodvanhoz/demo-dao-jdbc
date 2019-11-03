@@ -1,7 +1,9 @@
 package application;
 
+import java.security.IdentityScope;
 import java.util.Date;
 import java.util.List;
+import java.util.Scanner;
 
 import model.dao.DaoFactory;
 import model.dao.SellerDao;
@@ -12,6 +14,8 @@ public class Program {
 
 	public static void main(String[] args) {
 	
+		Scanner sc = new Scanner(System.in);
+		
 		SellerDao sellerDao = DaoFactory.createSellerDao();
 		Seller seller = sellerDao.findById(3);
 		
@@ -44,6 +48,15 @@ public class Program {
 		seller.setName("Martha Waine");
 		sellerDao.update(seller);
 		System.out.println("Update completado!");
+		
+		System.out.println("\n==== TEST 6: seller delete() ====");
+		System.out.print("Informe o Id do Seller: ");
+		int idDeleta = sc.nextInt();
+		
+		sellerDao.deletById(idDeleta);
+		
+		System.out.println("Id Seller " + idDeleta + " deletado com sucesso.");
+		sc.close();
 		
 	}
 
